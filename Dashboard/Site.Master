@@ -1,0 +1,29 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="LabManagement.Dashboard.Site" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title></title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+        <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <h1>Dashboard</h1>
+    </header>
+    <nav>
+        <a href="./">Home</a>
+        <a href="./Inventory.aspx">Inventory</a>
+        <a href="./Categories.aspx">Categories</a>
+    </nav>
+    <div>
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        </asp:ContentPlaceHolder>
+    </div>
+    <footer>
+    <div>&copy; Harsh Jamghare - 2023</div>
+</footer>
+</body>
+</html>
