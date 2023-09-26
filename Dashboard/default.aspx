@@ -7,19 +7,19 @@
         <div class="summary">
             <div class="item">
                 <span>Total Items:</span>
-                <span>1000</span>
+                <asp:Label runat="server" ID="tItem">1000</asp:Label>
             </div>
             <div class="item">
                 <span>Critical Items:</span>
-                <span>5</span>
+                <asp:Label runat="server" ID="cItem">1000</asp:Label>
             </div>
             <div class="item">
                 <span>Low Stock Items:</span>
-                <span>20</span>
+                <asp:Label runat="server" ID="tLowStock">1000</asp:Label>
             </div>
             <div class="item">
                 <span>Expired Items:</span>
-                <span>10</span>
+                <asp:Label runat="server" ID="tExpored">1000</asp:Label>
             </div>
         </div>
         <!-- Add any other dashboard elements here -->
