@@ -29,49 +29,6 @@ nav a:hover {
     text-decoration: underline;
 }
 
-.container {
-    padding: 2rem;
-}
-
-.summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    background-color: #F0F0F0;
-    padding: 1rem;
-    border-radius: 5px;
-}
-
-.item {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 0.5rem;
-}
-
-.item span {
-    font-weight: bold;
-}
-
-.category-form {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-.category-form label,
-.category-form input,
-.category-form textarea,
-.category-form button {
-    display: block;
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-.category-form textarea {
-    resize: vertical;
-    height: 80px;
-}
-
 footer {
     height: auto;
     width: 100vw;
@@ -87,6 +44,6 @@ footer {
     align-items: center;
 }
 
-    footer div {
-        padding: 0.25rem;
-    }
+footer div {
+    padding: 0.25rem;
+}
