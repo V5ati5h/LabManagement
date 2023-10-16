@@ -116,3 +116,11 @@ C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\obj\Debug\LabManag
 C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\obj\Debug\LabManagement.csproj.CopyComplete
 C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\obj\Debug\LabManagement.dll
 C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\obj\Debug\LabManagement.pdb
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\Newtonsoft.Json.dll
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Net.Http.Formatting.dll
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Web.Http.dll
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Web.Http.WebHost.dll
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\Newtonsoft.Json.xml
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Net.Http.Formatting.xml
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Web.Http.xml
+C:\Users\VSatish\Documents\GitHub\LabManagement\LabManagement\bin\System.Web.Http.WebHost.xml

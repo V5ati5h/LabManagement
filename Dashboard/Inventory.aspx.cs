@@ -15,8 +15,11 @@ namespace LabManagement.Dashboard
         SqlConnection conn;
         protected void Page_Load(object sender, EventArgs e)
         {
-            conn = new SqlConnection(ConfigurationManager.ConnectionStrings["strcon"].ConnectionString);
-            loadDepart();
+            if (!IsPostBack)
+            {
+                conn = new SqlConnection(ConfigurationManager.ConnectionStrings["strcon"].ConnectionString);
+                loadDepart();
+            }
         }
 
         protected void loadDepart()
@@ -34,34 +37,48 @@ namespace LabManagement.Dashboard
 
         protected void insertData(object sender, EventArgs e)
         {
+            Response.Write("<script>console.log("+ddCat.SelectedValue.ToString()+")</script>");
+            Response.Write("<script>console.log(" + ddStud.SelectedValue.ToString() + ")</script>");
             try
             {
-                SqlCommand cmd = new SqlCommand("INSERT INTO Tbl_Items(code, name, category, supplier, quantity, purchesePrice, available, expirationDate, lastUpdate) VALUES (@code, @name, @category, @supplier, @quantity, @purchesePrice, @available, @expirationDate, @lastUpdate);", conn)
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Tbl_Items(code, name, cId, forStud, supplier, quantity, purchesePrice, available, expirationDate, lastUpdate) VALUES (@code, @name, @category, @forStud, @supplier, @quantity, @purchesePrice, @available, @expirationDate, @lastUpdate);", conn))
                 {
-                    CommandType = CommandType.Text
-                };
-                cmd.Parameters.AddWithValue("@code", code.Text);
-                cmd.Parameters.AddWithValue("@name", name.Text);
-                cmd.Parameters.AddWithValue("@category", Convert.ToString(ddCat.SelectedItem));
-                cmd.Parameters.AddWithValue("@supplier", supplier.Text);
-                cmd.Parameters.AddWithValue("@quantity", quantity.Text);
-                cmd.Parameters.AddWithValue("@purchesePrice", pPrice.Text);
-                cmd.Parameters.AddWithValue("@available", avilable.Text);
-                cmd.Parameters.AddWithValue("@expirationDate", eDate.Text);
-                cmd.Parameters.AddWithValue("@lastUpdate", DateTime.Now.ToString());
-                conn.Open();
-                int k = cmd.ExecuteNonQuery();
-                if (k != 0)
-                {
-                    Response.Redirect("Inventory.aspx");
-                }
-                conn.Close();
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@code", code.Text);
+                    cmd.Parameters.AddWithValue("@name", name.Text);
+                    cmd.Parameters.AddWithValue("@category", ddCat.SelectedValue);
+                    cmd.Parameters.AddWithValue("@forStud", ddStud.SelectedValue);
+                    cmd.Parameters.AddWithValue("@supplier", supplier.Text);
+                    cmd.Parameters.AddWithValue("@quantity", quantity.Text);
+                    cmd.Parameters.AddWithValue("@purchesePrice", pPrice.Text);
+                    cmd.Parameters.AddWithValue("@available", avilable.Text);
+                    cmd.Parameters.AddWithValue("@expirationDate", eDate.Text);
+                    cmd.Parameters.AddWithValue("@lastUpdate", DateTime.Now.ToString());
 
+                    conn.Open();
+                    int k = cmd.ExecuteNonQuery();
+
+                    if (k != 0)
+                    {
+                        Response.Redirect("Inventory.aspx");
+                    }
+                    else
+                    {
+                        // Provide a message or log the error
+                        // Response.Write("Insert operation failed.");
+                        // Log the error
+                    }
+                }
             }
             catch (Exception ex)
             {
+                // Log the exception
+                // Response.Write("An error occurred: " + ex.Message);
             }
         }
+
+
 
         protected void ddCat_SelectedIndexChanged(object sender, EventArgs e)
         {
