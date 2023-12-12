@@ -97,6 +97,12 @@ namespace LabManagement.Controller
         {
             try
             {
+                // Input validation
+                if (string.IsNullOrEmpty(category.Name))
+                {
+                    return BadRequest("Category name cannot be empty.");
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
@@ -122,9 +128,12 @@ namespace LabManagement.Controller
             catch (Exception ex)
             {
                 // Log the exception
+                // Consider using a logging library like Serilog, NLog, or log4net
+                Console.WriteLine(ex);
                 return InternalServerError(ex);
             }
         }
+
 
         // PUT: api/categories/1
         public async Task<IHttpActionResult> PutCategory(int id, Categories category)

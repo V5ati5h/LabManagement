@@ -2,97 +2,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Function to load categories and populate the table
-            function loadCategories() {
-                $.get("../api/categories", function (data) {
-                    // Clear existing table rows
-                    $("#categoriesTable tbody").empty();
-
-                    // Populate the table with received data
-                    $.each(data, function (index, category) {
-                        var row = "<tr>" +
-                            "<td>" + category.Name + "</td>" +
-                            "<td>" + (category.Description || "") + "</td>" +
-                            "<td>" +
-                            "<a href='#' class='edit' data-id='" + category.Id + "'>Edit</a>" +
-                            "<a href='#' class='delete' data-id='" + category.Id + "'>Delete</a>" +
-                            "</td>" +
-                            "</tr>";
-                        $("#categoriesTable tbody").append(row);
-                    });
-                });
-            }
-
-            // Initial load when the page is ready
-            loadCategories();
-
-            $("#insertBtn").click(function (e) {
-                e.preventDefault(); // Prevent the default form submission
-
-                var categoryName = $("#cName").val();
-                var categoryDescription = $("#cDec").val();
-
-                // Make an AJAX request to insert the category
-                $.ajax({
-                    url: "../api/categories",
-                    type: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ Name: categoryName, Description: categoryDescription }),
-                    success: function () {
-
-                        // Clear input fields
-                        $("#cName").val("");
-                        $("#cDec").val("");
-
-                        // Reload categories after insertion
-                        loadCategories();
-                    },
-                    error: function (error) {
-                        console.error("Error creating category:", error);  // Add this line
-                        alert("Error creating category.");
-                    }
-                });
-            });
-
-            // Event delegation for edit and delete buttons
-            $("#categoriesTable").on("click", ".edit", function () {
-                var categoryId = $(this).data("id");
-                // Fetch the category details and implement your edit logic here...
-
-                // For demonstration, let's just show an alert
-                alert("Edit clicked for category with ID: " + categoryId);
-            });
-
-            $("#categoriesTable").on("click", ".delete", function () {
-                var categoryId = $(this).data("id");
-                // Implement your delete logic here...
-
-                // For demonstration, let's confirm deletion with an alert
-                if (confirm("Are you sure you want to delete this category?")) {
-                    // Make an AJAX request to delete the category
-                    $.ajax({
-                        url: "../api/categories/" + categoryId,
-                        type: "DELETE",
-                        success: function () {
-                            // Reload categories after deletion
-                            loadCategories();
-                        },
-                        error: function () {
-                            alert("Error deleting category.");
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-</asp:Content>
-
-
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <style>
-        /* Sample CSS for Excel-like styling */
         body {
             font-family: Arial, sans-serif;
         }
@@ -116,64 +26,242 @@
             background-color: #f2f2f2;
         }
 
-        /* Style for the form container */
-.catCont {
-    max-width: 400px;
-    margin: auto;
-}
+        .container {
+            height: 100vh;
+            width: 70vw;
+            margin: auto;
+        }
 
-/* Style for form groups */
-.form-group {
-    margin-bottom: 15px;
-}
+        .cat, .catUpdate {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.32);
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99988;
+        }
 
-/* Style for labels */
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .catCont, .catUpdateCont {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-/* Style for text inputs and textarea */
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-}
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-/* Style for the Create button */
-#insertBtn {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-}
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
 
-/* Hover effect for the Create button */
-#insertBtn:hover {
-    background-color: #0056b3;
-}
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
 
-        /* Additional styling can be added here */
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            margin: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .cat {
+            display: none;
+        }
     </style>
-    <div class="Holder">
-        <div class="catCont">
-    <div class="form-group">
-        <label for="cName">Category Name:</label>
-        <input id="cName" type="text" class="form-control" required />
-    </div>
-    
-    <div class="form-group">
-        <label for="cDec">Description:</label>
-        <textarea id="cDec" class="form-control" rows="3" required></textarea>
-    </div>
+    <script>
+        $(document).ready(function () {
+            var currentCategoryId;
+            var $cat = $(".cat");
+            var $catUpdate = $(".catUpdate");
+            var $categoriesTable = $("#categoriesTable tbody");
 
-    <button id="insertBtn" type="button" class="btn btn-primary">Create</button>
-</div>
+            function loadCategories() {
+                $.get("../api/categories", function (data) {
+                    $categoriesTable.empty();
 
-        <table id="categoriesTable" >
+                    $.each(data, function (index, category) {
+                        var row = `<tr>
+                                <td>${category.Name}</td>
+                                <td>${category.Description || ""}</td>
+                                <td>
+                                    <a href='#' class='edit' data-id='${category.Id}'>Edit</a>
+                                    <a href='#' class='delete' data-id='${category.Id}'>Delete</a>
+                                </td>
+                            </tr>`;
+                        $categoriesTable.append(row);
+                    });
+
+                    $catUpdate.hide();
+                });
+            }
+
+            function showCategoryForm($form) {
+                $form.show();
+            }
+
+            function hideCategoryForm($form) {
+                $form.hide();
+            }
+
+            function clearFormInputs() {
+                $(".form-control").val("");
+            }
+
+            loadCategories();
+
+            $("#createBtn").click(function () {
+                showCategoryForm($cat);
+            });
+
+            $("#closeBtn").click(function () {
+                hideCategoryForm($cat);
+            });
+
+            $("#insertBtn").click(function (e) {
+                e.preventDefault();
+
+                var categoryName = $("#cName").val();
+                var categoryDescription = $("#cDec").val();
+
+                $.ajax({
+                    url: "../api/categories",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ Name: categoryName, Description: categoryDescription }),
+                    success: function () {
+                        clearFormInputs();
+                        hideCategoryForm($cat);
+                        loadCategories();
+                    },
+                    error: function (error) {
+                        console.error("Error creating category:", error);
+                        alert("Error creating category.");
+                    }
+                });
+            });
+
+            $categoriesTable.on("click", ".edit", function () {
+                currentCategoryId = $(this).data("id");
+                showCategoryForm($catUpdate);
+
+                $.get("../api/categories/" + currentCategoryId, function (data) {
+                    $("#cNameUpdate").val(data.Name);
+                    $("#cDecUpdate").val(data.Description);
+                });
+            });
+
+            $categoriesTable.on("click", ".delete", function () {
+                var categoryId = $(this).data("id");
+
+                if (confirm("Are you sure you want to delete this category?")) {
+                    $.ajax({
+                        url: "../api/categories/" + categoryId,
+                        type: "DELETE",
+                        success: function () {
+                            loadCategories();
+                        },
+                        error: function () {
+                            alert("Error deleting category.");
+                        }
+                    });
+                }
+            });
+
+            $("#UpdateBtn").click(function (e) {
+                e.preventDefault();
+
+                var categoryName = $("#cNameUpdate").val();
+                var categoryDescription = $("#cDecUpdate").val();
+
+                $.ajax({
+                    url: "../api/categories/" + currentCategoryId,
+                    type: "PUT",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ Id: currentCategoryId, Name: categoryName, Description: categoryDescription }),
+                    success: function () {
+                        clearFormInputs();
+                        hideCategoryForm($catUpdate);
+                        loadCategories();
+                    },
+                    error: function (error) {
+                        console.error("Error updating category:", error);
+                        alert("Error updating category.");
+                    }
+                });
+            });
+
+            $("#closeUpdateBtn").click(function () {
+                hideCategoryForm($catUpdate);
+            });
+
+        });
+
+    </script>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+    <div class="container">
+        <div class="cat">
+            <div class="catCont">
+                <div class="form-group">
+                    <label for="cName">Category Name:</label>
+                    <input id="cName" type="text" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="cDec">Description:</label>
+                    <textarea id="cDec" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div style="display: flex; flex-direction: row">
+                    <button id="insertBtn" type="button" class="btn btn-primary">Create</button>
+                    <button id="closeBtn" type="button" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="catUpdate">
+            <div class="catUpdateCont">
+                <div class="form-group">
+                    <label for="cNameUpdate">Category Name:</label>
+                    <input id="cNameUpdate" type="text" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="cDecUpdate">Description:</label>
+                    <textarea id="cDecUpdate" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div style="display: flex; flex-direction: row">
+                    <button id="UpdateBtn" type="button" class="btn btn-primary">Update</button>
+                    <button id="closeUpdateBtn" type="button" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="createBtn">Add category</button>
+
+        <table id="categoriesTable">
             <thead>
                 <tr>
                     <th>Category Name</th>
