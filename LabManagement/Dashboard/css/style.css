@@ -1,25 +1,29 @@
-﻿/* Reset default styles */
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Global styles for body and fonts */
-body {
-    width: 100vw;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+
+html, body {
+    height: 100%;
 }
 
-/* Styling for the title at the top */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+
 .dashboard-title {
     background-color: #333;
     color: #fff;
     padding: 20px 0;
     text-align: center;
-    margin: 0;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -27,7 +31,6 @@ body {
         font-size: 24px;
     }
 
-/* Sidebar styling */
 #sidebar {
     background-color: #333;
     color: #fff;
@@ -36,6 +39,7 @@ body {
     position: fixed;
     top: 0;
     bottom: 0;
+    overflow-y: auto;
 }
 
     #sidebar ul {
@@ -58,9 +62,8 @@ body {
                     text-decoration: underline;
                 }
 
-/* Main content styling */
 main {
-    margin-left: 270px; /* Adjust margin to create space for the sidebar */
+    margin-left: 250px;
     padding: 20px;
 }
 
@@ -80,23 +83,21 @@ main {
         font-size: 16px;
     }
 
-/* Responsive styles for smaller screens */
 @media (max-width: 768px) {
     #sidebar {
-        width: 100vw;
+        width: 100%;
         position: static;
     }
 
     main {
-        width: 100vw;
+        width: 100%;
         margin-left: 0;
     }
 }
 
 footer {
-    z-index: 1;
     width: 100%;
-    position: sticky;
+    position: fixed;
     bottom: 0;
     background-color: #333;
     color: white;
@@ -104,70 +105,6 @@ footer {
     padding: 10px;
 }
 
-/* Form styles */
-form {
-    display: flex;
-    flex-direction: column;
+body {
+    padding-bottom: 40px;
 }
-
-label {
-    font-size: 16px;
-    margin-bottom: 5px;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-    button:hover {
-        background-color: #555;
-    }
-/* Apply a border to the table */
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-/* Style table header cells to look like Excel */
-th {
-    background-color: #333; /* Blue background color */
-    color: #fff; /* White text color */
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    border: 1px solid #000; /* Black border */
-}
-
-/* Style table data cells with borders */
-td {
-    text-align: center;
-    padding: 5px;
-    border: 1px solid #000; /* Black border */
-}
-
-/* Style the links in the sidebar */
-#sidebar ul li a {
-    color: #fff; /* Blue link color */
-}
-
-    /* Style the links on hover */
-    #sidebar ul li a:hover {
-        text-decoration: underline;
-    }

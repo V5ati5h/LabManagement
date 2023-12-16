@@ -1,129 +1,108 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Dashboard/Site.Master" AutoEventWireup="true" CodeBehind="Inventory.aspx.cs" Inherits="LabManagement.Dashboard.WebForm2" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .container {
-            height: 100vh;
-            width: 70vw;
-            margin: auto;
-        }
-
-        .items, .itemsUpdate {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: rgba(0, 0, 0, 0.32);
-            opacity: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99988;
-        }
-
-        .itemsCont, .itemsUpdateCont {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 10px 15px;
-            margin: 0.5rem;
-            border: none;
-            cursor: pointer;
-        }
-
-            button:hover {
-                background-color: #0056b3;
-            }
-    </style>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
     <script>
+        window.onload = function () {
+            var isAuthorized = sessionStorage.getItem('authorized');
+            if (isAuthorized !== 'true') {
+                window.location.href = '../default.aspx';
+            }
+        };
+
         $(document).ready(function () {
-            // Function to load categories into dropdown
-            function loadCategories(ddElement) {
-                // Simulate categories data
-                var categories = [
-                    { Id: 1, Name: "Category 1" },
-                    { Id: 2, Name: "Category 2" },
-                    // Add more categories as needed
-                ];
-
-                ddElement.empty(); // Clear existing options
-
-                // Add default option
-                ddElement.append($("<option></option>").val("").text("Select Category"));
-
-                // Add categories to the dropdown
-                $.each(categories, function (index, category) {
-                    ddElement.append($("<option></option>").val(category.Id).text(category.Name));
+            if (typeof jQuery === 'undefined' || typeof jQuery.ui === 'undefined') {
+                console.error('jQuery or jQuery UI is not loaded correctly.');
+            } else {
+                $('#eDate').datepicker({
+                    dateFormat: 'yy-mm-dd',
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                $('#eDateUpdate').datepicker({
+                    dateFormat: 'yy-mm-dd',
+                    autoclose: true,
+                    todayHighlight: true
                 });
             }
 
-            // Function to simulate loading items
-            function loadItems() {
-                // Simulate item data
-                var data = [
-                    { Code: "001", Name: "Item 1", Quantity: 10, Available: 5, Supplier: "Supplier 1", ExpirationDate: "2023-12-31", Id: 1 },
-                    { Code: "002", Name: "Item 2", Quantity: 20, Available: 15, Supplier: "Supplier 2", ExpirationDate: "2023-12-31", Id: 2 },
-                    // Add more items as needed
-                ];
+            function clearFormInputs() {
+                $("#code").val("");
+                $("#name").val("");
+                $("#supplier").val("");
+                $("#quantity").val("");
+                $("#pPrice").val("");
+                $("#avilable").val("");
+                $("#eDate").val("");
+                $("#codeUpdate").val("");
+                $("#nameUpdate").val("");
+                $("#supplierUpdate").val("");
+                $("#quantityUpdate").val("");
+                $("#pPriceUpdate").val("");
+                $("#avilableUpdate").val("");
+                $("#eDateUpdate").val("");
+            }
 
+            function loadCategories() {
+                $.ajax({
+                    url: "../api/categories",
+                    type: "GET",
+                    success: function (data) {
+                        $("#ddCat").empty();
+                        $.each(data, function (index, category) {
+                            $("#ddCat").append($('<option></option>').val(category.Id).text(category.Name));
+                        });
+                    },
+                    error: function (error) {
+                        console.error("Error fetching categories:", error);
+                        alert("Error fetching categories.");
+                    }
+                });
+            }
+
+            function loadCategoriesForUpdate() {
+                $.ajax({
+                    url: "../api/categories",
+                    type: "GET",
+                    success: function (data) {
+                        $("#ddCatUpdate").empty();
+                        $.each(data, function (index, category) {
+                            $("#ddCatUpdate").append($('<option></option>').val(category.Id).text(category.Name));
+                        });
+                    },
+                    error: function (error) {
+                        console.error("Error fetching categories for update:", error);
+                        alert("Error fetching categories for update.");
+                    }
+                });
+            }
+
+            loadCategories();
+
+            function loadItemsFromApi() {
+                $.ajax({
+                    url: "../api/items",
+                    type: "GET",
+                    success: function (data) {
+                        displayItemsInTable(data);
+                    },
+                    error: function (error) {
+                        console.error("Error fetching items:", error);
+                        alert("Error fetching items.");
+                    }
+                });
+            }
+
+            function displayItemsInTable(items) {
                 $("#inventoryTable tbody").empty();
 
-                $.each(data, function (index, item) {
+                $.each(items, function (index, item) {
                     var row = "<tr>" +
                         "<td>" + item.Code + "</td>" +
                         "<td>" + item.Name + "</td>" +
@@ -138,194 +117,266 @@
                     $("#inventoryTable tbody").append(row);
                 });
             }
+            loadItemsFromApi();
 
-            // Load categories for create form
-            loadCategories($("#ddCat"));
-            loadCategories($("#ddCatUpdate"));
-
-            // Load items on page load
-            loadItems();
-
-            // Event handler for Create button click (Create)
             $("#insertBtn").click(function () {
-                $(".items").css('visibility', 'visible');
+                var inputDate = $('#eDate').val();
+
+                if (!moment(inputDate, 'YYYY-MM-DD', true).isValid()) {
+                    alert('Please enter a valid date in YYYY-MM-DD format.');
+                    return;
+                }
+                var newItem = {
+                    Code: $("#code").val(),
+                    Name: $("#name").val(),
+                    CategoryId: $("#ddCat").val(),
+                    ForStud: $("#ddStud").val(),
+                    Supplier: $("#supplier").val(),
+                    Quantity: $("#quantity").val(),
+                    PurchesePrice: $("#pPrice").val(),
+                    Available: $("#avilable").val(),
+                    ExpirationDate: inputDate,
+                    LastUpdate: null
+                };
+
+                $.ajax({
+                    url: "../api/items",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(newItem),
+                    success: function (data) {
+                        loadItemsFromApi();
+                        clearFormInputs();
+                    },
+                    error: function (error) {
+                        console.error("Error inserting item:", error);
+                        alert("Error inserting item.");
+                    }
+                });
             });
 
-            $("#closeBtn").click(function () {
-                $(".items").css('visibility', 'hidden');
+            $('#updateItemModal').on('show.bs.modal', function (event) {
+                loadCategoriesForUpdate();
+
+                var button = $(event.relatedTarget);
+                var itemId = button.data('id');
+
+                $.ajax({
+                    url: "../api/items/" + itemId,
+                    type: "GET",
+                    success: function (data) {
+                        $("#codeUpdate").val(data.Code);
+                        $("#nameUpdate").val(data.Name);
+                        $("#ddCatUpdate").val(data.CategoryId);
+                        $("#ddStudUpdate").val(data.ForStud);
+                        $("#supplierUpdate").val(data.Supplier);
+                        $("#quantityUpdate").val(data.Quantity);
+                        $("#pPriceUpdate").val(data.PurchesePrice);
+                        $("#avilableUpdate").val(data.Available);
+                        $("#eDateUpdate").datepicker("setDate", new Date(data.ExpirationDate));
+                    },
+                    error: function () {
+                        alert("Error fetching item details for update.");
+                    }
+                });
             });
 
-            // Event handler for Update button click (Update)
-            $("#createBtnUpdate").click(function () {
-                $(".itemsUpdate").css('visibility', 'visible');
+            $("#inventoryTable").on("click", ".edit-link", function () {
+                var itemId = $(this).data("id");
+
+                // Fetch item details by ID and populate the update modal
+                $.ajax({
+                    url: "../api/items/" + itemId,
+                    type: "GET",
+                    success: function (data) {
+                        $("#codeUpdate").val(data.Code);
+                        $("#nameUpdate").val(data.Name);
+                        $('#updateItemModal').modal('show');
+                    },
+                    error: function (error) {
+                        console.error("Error fetching item details for update:", error);
+                        alert("Error fetching item details for update.");
+                    }
+                });
             });
 
-            $("#closeBtnUpdate").click(function () {
-                $(".itemsUpdate").css('visibility', 'hidden');
+            $("#insertBtnUpdate").click(function () {
+                var updatedItem = {
+                    Code: $("#codeUpdate").val(),
+                    Name: $("#nameUpdate").val(),
+                    CategoryId: $("#ddCatUpdate").val(),
+                    ForStud: $("#ddStudUpdate").val(),
+                    Supplier: $("#supplierUpdate").val(),
+                    Quantity: $("#quantityUpdate").val(),
+                    PurchesePrice: $("#pPriceUpdate").val(),
+                    Available: $("#avilableUpdate").val(),
+                    ExpirationDate: $("#eDateUpdate").val(),
+                    LastUpdate: null // You might want to set this value if needed
+                };
+
+                var currentItemId = $(this).data("id");
+
+                $.ajax({
+                    url: "../api/items/" + currentItemId,
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(updatedItem),
+                    success: function () {
+                        $('#updateItemModal').modal('hide');
+                        loadItemsFromApi();
+                        clearFormInputs();
+                    },
+                    error: function () {
+                        alert("Error updating item.");
+                    }
+                });
             });
 
-            // Event handler for Add items button click
-            $("#createBtn").click(function () {
-                // You can add additional functionality here
-                alert("Add items button clicked");
-            });
 
-            // Other existing code...
+            $("#inventoryTable").on("click", ".delete-link", function () {
+                var itemId = $(this).data("id");
+
+                if (confirm("Are you sure you want to delete this item?")) {
+                    $.ajax({
+                        url: "../api/items/" + itemId,
+                        type: "DELETE",
+                        success: function () {
+                            loadItemsFromApi();
+                        },
+                        error: function () {
+                            alert("Error deleting item.");
+                        }
+                    });
+                }
+            });
         });
+
     </script>
-
-    <!-- Your existing HTML -->
-
 
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-    <div class="container">
-        <div class="items">
-            <div class="itemsCont">
-                <h3 style="text-align: center;">Add new item</h3>
-                <br />
-                <div>
+    <div class="modal fade" id="updateItemModal" tabindex="-1" role="dialog" aria-labelledby="updateItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateItemModalLabel">Update Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
                     <div class="form-group">
-                        <div>
-                            <label for="code">Code:</label>
-                            <input id="code" type="text" />
-                        </div>
-                        <div>
-                            <label for="name">Name:</label>
-                            <input id="name" type="text" />
-                        </div>
+                        <label for="codeUpdate" class="form-label">Code:</label>
+                        <input id="codeUpdate" type="text" class="form-control" />
                     </div>
-
                     <div class="form-group">
-                        <label for="ddCat">Category:</label>
-                        <select id="ddCat"></select>
-
-                        <label for="ddStud">For Students:</label>
-                        <select id="ddStud">
+                        <label for="nameUpdate" class="form-label">Name:</label>
+                        <input id="nameUpdate" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ddCatUpdate" class="form-label">Category:</label>
+                        <select id="ddCatUpdate" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddStudUpdate" class="form-label">For Students:</label>
+                        <select id="ddStudUpdate" class="form-control">
                             <option value="0">MSC</option>
                             <option value="1">BSC</option>
                             <option value="2">JRc</option>
                             <option value="3">All</option>
                         </select>
                     </div>
-
+                    <!-- Other input fields and form groups -->
                     <div class="form-group">
-                        <div>
-                            <label for="supplier">Supplier:</label>
-                            <input id="supplier" type="text" />
-                        </div>
-                        <div>
-                            <label for="quantity">Quantity:</label>
-                            <input id="quantity" type="text" />
-                        </div>
+                        <label for="eDateUpdate" class="form-label">Expiration Date:</label>
+                        <input id="eDateUpdate" type="text" class="form-control">
                     </div>
-
-                    <div class="form-group">
-                        <div>
-                            <label for="pPrice">Purchase Price:</label>
-                            <input id="pPrice" type="text" />
-                        </div>
-                        <div>
-                            <label for="avilable">Avilable:</label>
-                            <input id="avilable" type="text" />
-                        </div>
-                    </div>
-
-                    <label for="eDate">Expiration Date:</label>
-                    <input id="eDate" type="text" />
-
-                    <div class="form-group">
-                        <button id="insertBtn" type="button" class="btn btn-primary">Create</button>
-                        <button id="closeBtn" type="button" class="btn btn-primary">Close</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="insertBtnUpdate" type="button" class="btn btn-primary">Update</button>
+                    <button id="closeBtnUpdate" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
-
-        <div class="itemsUpdate">
-
-            <div class="itemsUpdateCont">
-                <h3 style="text-align: center;">Update item</h3>
-                <div>
-                    <div class="form-group">
-                        <div>
-                            <label for="codeUpdate">Code:</label>
-                            <input id="codeUpdate" type="text" />
-                        </div>
-                        <div>
-                            <label for="nameUpdate">Name:</label>
-                            <input id="nameUpdate" type="text" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div>
-                            <label for="ddCatUpdate">Category:</label>
-                            <select id="ddCatUpdate"></select>
-                        </div>
-                        <div>
-                            <label for="ddStudUpdate">For Students:</label>
-                            <select id="ddStudUpdate">
-                                <option value="0">MSC</option>
-                                <option value="1">BSC</option>
-                                <option value="2">JRc</option>
-                                <option value="3">All</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <label for="supplierUpdate">Supplier:</label>
-                            <input id="supplierUpdate" type="text" />
-                        </div>
-                        <div>
-                            <label for="quantityUpdate">Quantity:</label>
-                            <input id="quantityUpdate" type="text" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <label for="pPriceUpdate">Purchase Price:</label>
-                            <input id="pPriceUpdate" type="text" />
-                        </div>
-                        <div>
-                            <label for="avilableUpdate">Avilable:</label>
-                            <input id="avilableUpdate" type="text" />
-                        </div>
-                    </div>
-
-                    <label for="eDateUpdate">Expiration Date:</label>
-                    <input id="eDateUpdate" type="text" />
-
-                    <div class="form-group">
-                        <button id="insertBtnUpdate" type="button" class="btn btn-primary">Create</button>
-                        <button id="closeBtnUpdate" type="button" class="btn btn-primary">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button id="createBtn">Add items</button>
-        <br />
-        <table id="inventoryTable">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Available</th>
-                    <th>Location</th>
-                    <th>Supplier</th>
-                    <th>Expiration date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Table rows will be dynamically populated here -->
-            </tbody>
-        </table>
     </div>
 
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">Add new item</h3>
+                        <form>
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Code:</label>
+                                <input id="code" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name:</label>
+                                <input id="name" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="ddCat" class="form-label">Category:</label>
+                                <select id="ddCat" class="form-select"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ddStud" class="form-label">For Students:</label>
+                                <select id="ddStud" class="form-select">
+                                    <option value="0">MSC</option>
+                                    <option value="1">BSC</option>
+                                    <option value="2">JRc</option>
+                                    <option value="3">All</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="supplier" class="form-label">Supplier:</label>
+                                <input id="supplier" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity:</label>
+                                <input id="quantity" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pPrice" class="form-label">Purchase Price:</label>
+                                <input id="pPrice" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="avilable" class="form-label">Available:</label>
+                                <input id="avilable" type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="eDate" class="form-label">Expiration Date:</label>
+                                <input id="eDate" type="text" class="form-control">
+                            </div>
+                            <div class="d-grid">
+                                <button id="insertBtn" type="button" class="btn btn-primary">Create</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <table id="inventoryTable" class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Available</th>
+                            <th>Supplier</th>
+                            <th>Expiration date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Categories will be dynamically populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </asp:Content>

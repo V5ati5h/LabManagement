@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using System;
 
 namespace LabManagement.Dashboard
 {
@@ -15,11 +10,14 @@ namespace LabManagement.Dashboard
         protected void Page_Load(object sender, EventArgs e)
         {
             conn = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnString"].ConnectionString);
-            tItem.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items");
-            cItem.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items");
-            tLowStock.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items");
-            tExpored.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items");
 
+            tItem.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items");
+
+            cItem.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items WHERE Quantity < 10");
+
+            tLowStock.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items WHERE Quantity BETWEEN 10 AND 50");
+
+            tExpired.Text = loadkar("SELECT COUNT(*) FROM Tbl_Items WHERE ExpirationDate < GETDATE()");
         }
 
         protected String loadkar(String txt)

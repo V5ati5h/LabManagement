@@ -131,7 +131,7 @@ namespace LabManagement.Controller
                         command.Parameters.AddWithValue("@Supplier", item.Supplier ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@PurchesePrice", item.PurchesePrice);
                         command.Parameters.AddWithValue("@ExpirationDate", item.ExpirationDate ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@LastUpdate", DateTime.Now.ToString());
+                        command.Parameters.AddWithValue("@LastUpdate", DateTime.UtcNow.ToString());
 
                         int newItemId = Convert.ToInt32(await command.ExecuteScalarAsync());
                         item.Id = newItemId;
@@ -173,7 +173,7 @@ namespace LabManagement.Controller
                         command.Parameters.AddWithValue("@Supplier", item.Supplier ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@PurchesePrice", item.PurchesePrice);
                         command.Parameters.AddWithValue("@ExpirationDate", item.ExpirationDate ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@LastUpdate", DateTime.Now.ToString());
+                        command.Parameters.AddWithValue("@LastUpdate", DateTime.UtcNow.ToString());
 
                         int rowsAffected = await command.ExecuteNonQueryAsync();
 
