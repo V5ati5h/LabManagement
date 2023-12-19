@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
     <script>
@@ -15,7 +16,6 @@
                 window.location.href = '../default.aspx';
             }
         };
-
         $(document).ready(function () {
             if (typeof jQuery === 'undefined' || typeof jQuery.ui === 'undefined') {
                 console.error('jQuery or jQuery UI is not loaded correctly.');
@@ -32,6 +32,7 @@
                 });
             }
 
+            // Function to clear form inputs
             function clearFormInputs() {
                 $("#code").val("");
                 $("#name").val("");
@@ -49,6 +50,7 @@
                 $("#eDateUpdate").val("");
             }
 
+            // Function to load categories
             function loadCategories() {
                 $.ajax({
                     url: "../api/categories",
@@ -66,6 +68,7 @@
                 });
             }
 
+            // Function to load categories for update
             function loadCategoriesForUpdate() {
                 $.ajax({
                     url: "../api/categories",
@@ -83,8 +86,7 @@
                 });
             }
 
-            loadCategories();
-
+            // Function to load items from API and display in table
             function loadItemsFromApi() {
                 $.ajax({
                     url: "../api/items",
@@ -99,6 +101,7 @@
                 });
             }
 
+            // Function to display items in the table
             function displayItemsInTable(items) {
                 $("#inventoryTable tbody").empty();
 
@@ -117,6 +120,9 @@
                     $("#inventoryTable tbody").append(row);
                 });
             }
+
+            // Load categories and items on page load
+            loadCategories();
             loadItemsFromApi();
 
             $("#insertBtn").click(function () {
@@ -155,11 +161,10 @@
                 });
             });
 
-            $('#updateItemModal').on('show.bs.modal', function (event) {
+            $("#inventoryTable").on("click", ".edit-link", function () {
                 loadCategoriesForUpdate();
-
-                var button = $(event.relatedTarget);
-                var itemId = button.data('id');
+                var itemId = $(this).data("id");
+                $("#insertBtnUpdate").data("id", itemId);
 
                 $.ajax({
                     url: "../api/items/" + itemId,
@@ -173,25 +178,9 @@
                         $("#quantityUpdate").val(data.Quantity);
                         $("#pPriceUpdate").val(data.PurchesePrice);
                         $("#avilableUpdate").val(data.Available);
-                        $("#eDateUpdate").datepicker("setDate", new Date(data.ExpirationDate));
-                    },
-                    error: function () {
-                        alert("Error fetching item details for update.");
-                    }
-                });
-            });
+                        $("#eDateUpdate").val(data.ExpirationDate);
 
-            $("#inventoryTable").on("click", ".edit-link", function () {
-                var itemId = $(this).data("id");
-
-                // Fetch item details by ID and populate the update modal
-                $.ajax({
-                    url: "../api/items/" + itemId,
-                    type: "GET",
-                    success: function (data) {
-                        $("#codeUpdate").val(data.Code);
-                        $("#nameUpdate").val(data.Name);
-                        $('#updateItemModal').modal('show');
+                        $('#updateItemModal').modal('show'); // Show the update modal
                     },
                     error: function (error) {
                         console.error("Error fetching item details for update:", error);
@@ -201,6 +190,12 @@
             });
 
             $("#insertBtnUpdate").click(function () {
+                var inputDate = $('#eDateUpdate').val();
+
+                if (!moment(inputDate, 'YYYY-MM-DD', true).isValid()) {
+                    alert('Please enter a valid date in YYYY-MM-DD format.');
+                    return;
+                }
                 var updatedItem = {
                     Code: $("#codeUpdate").val(),
                     Name: $("#nameUpdate").val(),
@@ -230,6 +225,9 @@
                         alert("Error updating item.");
                     }
                 });
+                $('#updateItemModal').modal('hide');
+                loadItemsFromApi();
+                clearFormInputs();
             });
 
 
@@ -284,11 +282,26 @@
                         <select id="ddStudUpdate" class="form-control">
                             <option value="0">MSC</option>
                             <option value="1">BSC</option>
-                            <option value="2">JRc</option>
+                            <option value="2">JRC</option>
                             <option value="3">All</option>
                         </select>
                     </div>
-                    <!-- Other input fields and form groups -->
+                    <div class="form-group">
+                        <label for="supplierUpdate" class="form-label">Supplier:</label>
+                        <input id="supplierUpdate" type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="quantityUpdate" class="form-label">Quantity:</label>
+                        <input id="quantityUpdate" type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pPriceUpdate" class="form-label">Purchase Price:</label>
+                        <input id="pPriceUpdate" type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="avilableUpdate" class="form-label">Available:</label>
+                        <input id="avilableUpdate" type="text" class="form-control">
+                    </div>
                     <div class="form-group">
                         <label for="eDateUpdate" class="form-label">Expiration Date:</label>
                         <input id="eDateUpdate" type="text" class="form-control">
@@ -328,7 +341,7 @@
                                 <select id="ddStud" class="form-select">
                                     <option value="0">MSC</option>
                                     <option value="1">BSC</option>
-                                    <option value="2">JRc</option>
+                                    <option value="2">JRC</option>
                                     <option value="3">All</option>
                                 </select>
                             </div>
