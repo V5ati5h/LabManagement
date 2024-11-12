@@ -24,7 +24,7 @@ A .NET and Bootstrap web application designed to assist educational institutions
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/yourrepository.git
+   git clone https://github.com/V5ati5h/LabManagement.git
    ```
 
 2. Navigate to the project directory and build the project:
